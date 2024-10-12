@@ -1,118 +1,223 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { normalize } from 'react-native-elements';
+import TAB_HOME from './assets/home.png';
+import TAB_PROFILE from './assets/profile.png';
+import TAB_SETTING from './assets/setting.png';
+import TAB_CART from './assets/cart.png';
+import TAB_PLUS from './assets/plus.png';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function HomeScreen() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.screen}>
+      <Text>Home Screen</Text>
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function HistoryScreen() {
+  return (
+    <View style={styles.screen}>
+      <Text>History Screen</Text>
+    </View>
+  );
+}
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+function ProfileScreen() {
+  return (
+    <View style={styles.screen}>
+      <Text>Profile Screen</Text>
+    </View>
+  );
+}
+
+function SettingsScreen() {
+  return (
+    <View style={styles.screen}>
+      <Text>Settings Screen</Text>
+    </View>
+  );
+}
+
+function AnotherScreen() {
+  return (
+    <View style={styles.screen}>
+      <Text>Another Screen</Text>
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+const CustomTabBarButton = ({ children, onPress }) => {
+  // Create animated value
+  const scale = React.useRef(new Animated.Value(1)).current;
+
+  // Handle press in and out animations
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 2,
+      useNativeDriver: true,
+    }).start(onPress);
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <TouchableOpacity
+      style={styles.customTabButton}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      activeOpacity={1}
+    >
+      <Animated.View style={{ transform: [{ scale }] }}>
+        {children}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {
+            backgroundColor: '#ffffff',
+            position: 'absolute',
+            height: 72,
+            borderTopWidth: 0,
+          },
+          tabBarShowLabel: false,
+        }}
+        initialRouteName='Add Data'
+      >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? styles.activeIconContainer : styles.inactiveIconContainer}>
+                <Image
+                  style={styles.icon}
+                  tintColor={focused ? '#e91e63' : '#000000'}
+                  source={TAB_HOME}
+                />
+              </View>
+            ),
+            tabBarButton: (props) => <CustomTabBarButton {...props} />,
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? styles.activeIconContainer : styles.inactiveIconContainer}>
+                <Image
+                  style={styles.icon}
+                  tintColor={focused ? '#e91e63' : '#000000'}
+                  source={TAB_SETTING}
+                />
+              </View>
+            ),
+            tabBarButton: (props) => <CustomTabBarButton {...props} />,
+          }}
+        />
+        <Tab.Screen
+          name="Add Data"
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? styles.activeIconContainer : styles.inactiveIconContainer}>
+                <Image
+                  style={styles.icon}
+                  tintColor={focused ? '#e91e63' : '#000000'}
+                  source={TAB_PLUS}
+                />
+              </View>
+            ),
+            tabBarButton: (props) => <CustomTabBarButton {...props} />,
+          }}
+        />
+        <Tab.Screen
+          name="Cart"
+          component={AnotherScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? styles.activeIconContainer : styles.inactiveIconContainer}>
+                <Image
+                  style={styles.icon}
+                  tintColor={focused ? '#e91e63' : '#000000'}
+                  source={TAB_CART}
+                />
+              </View>
+            ),
+            tabBarButton: (props) => <CustomTabBarButton {...props} />,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={HistoryScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? styles.activeIconContainer : styles.inactiveIconContainer}>
+                <Image
+                  style={styles.icon}
+                  tintColor={focused ? '#e91e63' : '#000000'}
+                  source={TAB_PROFILE}
+                />
+              </View>
+            ),
+            tabBarButton: (props) => <CustomTabBarButton {...props} />,
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  screen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  icon: {
+    width: normalize(24),
+    height: normalize(24),
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  activeIconContainer: {
+    width: 56,
+    height: 56,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    marginBottom: 36,
   },
-  highlight: {
-    fontWeight: '700',
+  inactiveIconContainer: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customTabButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 1,
+    elevation: 5,
+    marginHorizontal: 'auto',
   },
 });
-
-export default App;
